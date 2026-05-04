@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { getStaticResponse } from './atlasResponses.js'
 
 // ─── Figma asset URLs ─────────────────────────────────────────────────────
@@ -697,6 +698,7 @@ export default function App() {
         setInputValue={setInputValue}
         onSend={sendMessage}
       />
+      <Analytics />
     </div>
   )
 }
