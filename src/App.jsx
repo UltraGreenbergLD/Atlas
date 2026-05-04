@@ -1,6 +1,85 @@
 import { useState, useRef, useEffect } from 'react'
 import { getStaticResponse } from './atlasResponses.js'
 
+// ─── Theme Definitions (from Figma) ──────────────────────────────────────
+const THEMES = {
+  midnight: {
+    '--bg-default':       '#111520',
+    '--bg-elevation-one': '#192030',
+    '--bg-elevation-two': '#222a40',
+    '--border-default':   '#2a3550',
+    '--border-accent':    '#555d73',
+    '--fg-primary':       '#d4d7dc',
+    '--fg-secondary':     '#aaaeb9',
+    '--btn-sec-bg':       '#0f2133',
+    '--btn-sec-border':   '#2e6299',
+    '--btn-sec-fg':       '#4da3ff',
+    '--badge-success-bg': '#0a2a1f',
+    '--badge-success-border': '#1f7f5c',
+    '--badge-success-fg': '#34d399',
+    '--pill-bg':          '#0c2d27',
+    '--pill-border':      '#185a4e',
+    '--pill-fg':          '#d8f9f3',
+    '--input-bg':         '#0b0f1a',
+    '--input-border':     '#2a3550',
+    '--input-placeholder':'#7f8696',
+    '--char-icon-bg':     'rgba(77,163,255,0.12)',
+    '--nav-active-bg':    '#111520',
+  },
+  office: {
+    '--bg-default':       '#edf1fb',
+    '--bg-elevation-one': '#dde3f5',
+    '--bg-elevation-two': '#ffffff',
+    '--border-default':   '#c8d0e8',
+    '--border-accent':    '#a0aac8',
+    '--fg-primary':       '#1a2040',
+    '--fg-secondary':     '#4a5280',
+    '--btn-sec-bg':       '#dbeafe',
+    '--btn-sec-border':   '#93c5fd',
+    '--btn-sec-fg':       '#1d4ed8',
+    '--badge-success-bg': '#dcfce7',
+    '--badge-success-border': '#86efac',
+    '--badge-success-fg': '#16a34a',
+    '--pill-bg':          '#e0f2fe',
+    '--pill-border':      '#7dd3fc',
+    '--pill-fg':          '#0369a1',
+    '--input-bg':         '#ffffff',
+    '--input-border':     '#c8d0e8',
+    '--input-placeholder':'#9099b8',
+    '--char-icon-bg':     'rgba(29,78,216,0.1)',
+    '--nav-active-bg':    '#edf1fb',
+  },
+  dusk: {
+    '--bg-default':       '#1a1225',
+    '--bg-elevation-one': '#221830',
+    '--bg-elevation-two': '#2d2040',
+    '--border-default':   '#3d2d58',
+    '--border-accent':    '#6b5080',
+    '--fg-primary':       '#e8dff5',
+    '--fg-secondary':     '#b09cc8',
+    '--btn-sec-bg':       '#2a1540',
+    '--btn-sec-border':   '#7c3aed',
+    '--btn-sec-fg':       '#c4b5fd',
+    '--badge-success-bg': '#0a2a1f',
+    '--badge-success-border': '#1f7f5c',
+    '--badge-success-fg': '#34d399',
+    '--pill-bg':          '#2d1a40',
+    '--pill-border':      '#7c3aed',
+    '--pill-fg':          '#e9d5ff',
+    '--input-bg':         '#130e1e',
+    '--input-border':     '#3d2d58',
+    '--input-placeholder':'#7a6590',
+    '--char-icon-bg':     'rgba(167,139,250,0.15)',
+    '--nav-active-bg':    '#1a1225',
+  },
+}
+
+function applyTheme(name) {
+  const vars = THEMES[name]
+  const root = document.documentElement
+  Object.entries(vars).forEach(([k, v]) => root.style.setProperty(k, v))
+}
+
 // ─── Figma asset URLs ─────────────────────────────────────────────────────
 const ASSETS = {
   logo:    'https://www.figma.com/api/mcp/asset/7a28f0c4-2d54-474c-8cd3-7d2ca111ea3c',
@@ -27,26 +106,35 @@ const ASSETS = {
 // No API — responses are served from atlasResponses.js (static, zero cost)
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────
-function Sidebar({ page, setPage }) {
+function Sidebar({ page, setPage, collapsed, setCollapsed }) {
   return (
     <div style={{
-      width: 208, flexShrink: 0, height: '100%', display: 'flex', flexDirection: 'column',
-      background: 'var(--bg-elevation-one)',
+      width: collapsed ? 44 : 208, flexShrink: 0, height: '100%', display: 'flex', flexDirection: 'column',
+      background: 'var(--bg-elevation-one)', overflow: 'hidden',
+      transition: 'width 0.2s ease',
     }}>
       {/* Header */}
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:8 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <div style={{ width:30, height:29, borderRadius:8, overflow:'hidden', background:'var(--bg-elevation-one)', flexShrink:0 }}>
-            <img src={ASSETS.logo} style={{ width:'100%', height:'100%', objectFit:'cover' }} alt="Atlas" />
+      <div style={{ display:'flex', alignItems:'center', justifyContent: collapsed ? 'center' : 'space-between', padding:8, flexShrink:0 }}>
+        {!collapsed && (
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <div style={{ width:30, height:29, borderRadius:8, overflow:'hidden', background:'var(--bg-elevation-one)', flexShrink:0 }}>
+              <img src={ASSETS.logo} style={{ width:'100%', height:'100%', objectFit:'cover' }} alt="Atlas" />
+            </div>
+            <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:16, color:'var(--fg-primary)', whiteSpace:'nowrap' }}>
+              Welcome
+            </span>
           </div>
-          <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:16, color:'var(--fg-primary)' }}>
-            Welcome
-          </span>
-        </div>
-        <img src={ASSETS.sidebarToggle} style={{ width:17, height:17, cursor:'pointer', opacity:.7 }} alt="" />
+        )}
+        <img
+          src={ASSETS.sidebarToggle}
+          onClick={() => setCollapsed(!collapsed)}
+          style={{ width:17, height:17, cursor:'pointer', opacity:.7, flexShrink:0 }}
+          alt="Toggle sidebar"
+        />
       </div>
 
-      {/* Nav */}
+      {/* Nav — hidden when collapsed */}
+      {!collapsed && (
       <div style={{ flex:1, padding:'16px 8px', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
         <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
           {[
@@ -92,8 +180,10 @@ function Sidebar({ page, setPage }) {
           ))}
         </div>
       </div>
+      )} {/* end collapsed check */}
 
-      {/* Footer */}
+      {/* Footer — hidden when collapsed */}
+      {!collapsed && (
       <div style={{ borderTop:'1px solid var(--border-default)', background:'var(--bg-elevation-one)' }}>
         {/* Active Game */}
         <div style={{ display:'flex', gap:8, padding:12, alignItems:'flex-start' }}>
@@ -118,6 +208,7 @@ function Sidebar({ page, setPage }) {
           <span style={{ fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-primary)' }}>User1</span>
         </div>
       </div>
+      )} {/* end collapsed check */}
     </div>
   )
 }
@@ -369,7 +460,7 @@ function Toggle({ defaultOn = false }) {
   )
 }
 
-function SettingsPage() {
+function SettingsPage({ theme, setTheme }) {
   const toggles = [
     { label:'Data Privacy Controls',  desc:'Limit data sent to AI services', defaultOn:true },
     { label:'AI Accuracy Feedback',   desc:'Allow rating responses for improvement' },
@@ -382,9 +473,9 @@ function SettingsPage() {
     { label:'Voice Command',   desc:'Allows you to control Atlas in game with Voice.', keys:'~' },
   ]
   const themes = [
-    { name:'Midnight', desc:'The default Atlas theme, inherently dark.', current:true },
-    { name:'Office',   desc:"If you want to relieve the days of Microsoft Offices blinding UI, this one is for you." },
-    { name:'Dusk',     desc:"A slightly more colorful version of Midnight, are you that scared of the dark?" },
+    { key:'midnight', name:'Midnight', desc:'The default Atlas theme, inherently dark.' },
+    { key:'office',   name:'Office',   desc:"If you want to relieve the days of Microsoft Office's blinding UI, this one is for you." },
+    { key:'dusk',     name:'Dusk',     desc:"A slightly more colorful version of Midnight, are you that scared of the dark?" },
   ]
 
   return (
@@ -485,24 +576,25 @@ function SettingsPage() {
               Change it up, make Atlas feel like yours.
             </p>
             {themes.map(t => (
-              <div key={t.name} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
+              <div key={t.key} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
                 <div>
                   <div style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:14, color:'var(--fg-primary)', lineHeight:'20px' }}>{t.name}</div>
                   <div style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)', lineHeight:'16px', maxWidth:220 }}>{t.desc}</div>
                 </div>
-                {t.current ? (
+                {theme === t.key ? (
                   <button style={{
                     background:'var(--btn-sec-bg)', border:'1px solid var(--btn-sec-border)',
                     borderRadius:8, padding:'6px 12px', flexShrink:0,
                     fontFamily:'var(--font-primary)', fontWeight:500, fontSize:12, color:'var(--btn-sec-fg)',
-                    cursor:'pointer', whiteSpace:'nowrap',
+                    cursor:'default', whiteSpace:'nowrap',
                   }}>Current Theme</button>
                 ) : (
-                  <button style={{
+                  <button onClick={() => setTheme(t.key)} style={{
                     background:'var(--bg-elevation-two)', border:'1px solid var(--border-accent)',
                     borderRadius:8, padding:'6px 12px', flexShrink:0,
                     fontFamily:'var(--font-primary)', fontWeight:500, fontSize:12, color:'var(--fg-primary)',
                     cursor:'pointer', whiteSpace:'nowrap',
+                    transition:'background 0.15s, border-color 0.15s',
                   }}>Select</button>
                 )}
               </div>
@@ -540,7 +632,7 @@ function ChatPanel({ messages, isThinking, inputValue, setInputValue, onSend }) 
 
   return (
     <div style={{
-      flex:1, minWidth:0, height:'100%', display:'flex', flexDirection:'column',
+      flex:'0 0 280px', width:280, height:'100%', display:'flex', flexDirection:'column',
       background:'var(--bg-elevation-one)',
     }}>
       {/* Header */}
@@ -653,12 +745,12 @@ function ChatPanel({ messages, isThinking, inputValue, setInputValue, onSend }) 
 }
 
 // ─── Main content wrapper ─────────────────────────────────────────────────
-function MainContent({ page, onActionClick }) {
+function MainContent({ page, onActionClick, theme, setTheme }) {
   return (
     <div style={{ flex:1, minWidth:0, height:'100%', display:'flex', padding:'12px 8px', gap:0 }}>
       {page === 'home'
         ? <HomeDashboard onActionClick={onActionClick} />
-        : <SettingsPage />
+        : <SettingsPage theme={theme} setTheme={setTheme} />
       }
     </div>
   )
@@ -667,6 +759,8 @@ function MainContent({ page, onActionClick }) {
 // ─── App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [page, setPage] = useState('home')
+  const [collapsed, setCollapsed] = useState(false)
+  const [theme, setTheme] = useState('midnight')
   const [messages, setMessages] = useState([])
   const [isThinking, setIsThinking] = useState(false)
   const [inputValue, setInputValue] = useState('')
@@ -688,8 +782,8 @@ export default function App() {
 
   return (
     <div style={{ width:'100%', height:'100%', display:'flex', overflow:'hidden', background:'var(--bg-elevation-one)' }}>
-      <Sidebar page={page} setPage={setPage} />
-      <MainContent page={page} onActionClick={sendMessage} />
+      <Sidebar page={page} setPage={setPage} collapsed={collapsed} setCollapsed={setCollapsed} />
+      <MainContent page={page} onActionClick={sendMessage} theme={theme} setTheme={(t) => { setTheme(t); applyTheme(t) }} />
       <ChatPanel
         messages={messages}
         isThinking={isThinking}
