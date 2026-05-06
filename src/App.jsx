@@ -142,13 +142,13 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
       <div style={{ flex:1, padding:'16px 8px', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
         <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
           {[
-            { key:'home',     label:'Home',      icon: ASSETS.homeIcon },
-            { key:'knowledge',label:'Knowledge', icon: ASSETS.brainIcon },
-            { key:'logs',     label:'Logs',      icon: ASSETS.bookIcon },
-            { key:'settings', label:'Settings',  icon: ASSETS.filterIcon },
+            { key:'home',      label:'Home',        icon: ASSETS.homeIcon },
+            { key:'knowledge', label:'Coming Soon', icon: ASSETS.brainIcon },
+            { key:'logs',      label:'Coming Soon', icon: ASSETS.bookIcon },
+            { key:'settings',  label:'Settings',    icon: ASSETS.filterIcon },
           ].map(item => {
             const active = page === item.key
-            const clickable = item.key === 'home' || item.key === 'settings'
+            const clickable = item.key === 'home' || item.key === 'settings' || item.key === 'knowledge' || item.key === 'logs'
             return (
               <button key={item.key} onClick={() => clickable && setPage(item.key)} style={{
                 display:'flex', alignItems:'center', gap:12, height:37,
@@ -748,13 +748,33 @@ function ChatPanel({ messages, isThinking, inputValue, setInputValue, onSend }) 
   )
 }
 
+// ─── Coming Soon Page ─────────────────────────────────────────────────────
+function ComingSoonPage() {
+  return (
+    <div style={{
+      background:'var(--bg-default)', border:'0.5px solid var(--border-accent)',
+      borderRadius:24, flex:1, minWidth:0, height:'100%',
+      display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:12,
+    }}>
+      <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:32, color:'var(--fg-primary)' }}>
+        Coming Soon
+      </span>
+      <span style={{ fontFamily:'var(--font-primary)', fontSize:16, color:'var(--fg-secondary)' }}>
+        This feature is on its way.
+      </span>
+    </div>
+  )
+}
+
 // ─── Main content wrapper ─────────────────────────────────────────────────
 function MainContent({ page, onActionClick, theme, setTheme }) {
   return (
     <div style={{ flex:1, minWidth:0, height:'100%', display:'flex', padding:'12px 8px', gap:0 }}>
       {page === 'home'
         ? <HomeDashboard onActionClick={onActionClick} />
-        : <SettingsPage theme={theme} setTheme={setTheme} />
+        : page === 'settings'
+        ? <SettingsPage theme={theme} setTheme={setTheme} />
+        : <ComingSoonPage />
       }
     </div>
   )
