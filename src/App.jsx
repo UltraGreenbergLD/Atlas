@@ -464,6 +464,18 @@ function Toggle({ defaultOn = false }) {
   )
 }
 
+function formatKey(e) {
+  const mods = []
+  if (e.ctrlKey)  mods.push('Ctrl')
+  if (e.metaKey)  mods.push('Cmd')
+  if (e.altKey)   mods.push('Alt')
+  if (e.shiftKey) mods.push('Shift')
+  const { key } = e
+  if (['Control', 'Meta', 'Alt', 'Shift'].includes(key)) return null
+  const display = key === ' ' ? 'Space' : key.length === 1 ? key.toUpperCase() : key
+  return [...mods, display].join(' + ')
+}
+
 function SettingsPage({ theme, setTheme }) {
   const toggles = [
     { label:'Data Privacy Controls',  desc:'Limit data sent to AI services', defaultOn:true },
@@ -471,11 +483,31 @@ function SettingsPage({ theme, setTheme }) {
     { label:'Performance Mode',       desc:'Reduce AI resource usage during gameplay' },
     { label:'Hint Mode',              desc:'Give hints instead of full answers' },
   ]
-  const keybinds = [
+  const [keybinds, setKeybinds] = useState([
     { label:'Summon Overlay',  desc:'Pulls up the in-game overlay.', keys:'Shift + Q' },
     { label:'Text Command',    desc:'Allows you to control Atlas in game with Text.', keys:'Shift + /' },
     { label:'Voice Command',   desc:'Allows you to control Atlas in game with Voice.', keys:'~' },
-  ]
+  ])
+  const [listening, setListening] = useState(null)
+  const prevKeyRef = useRef(null)
+
+  useEffect(() => {
+    if (!listening) return
+    const handleKey = (e) => {
+      e.preventDefault()
+      if (e.key === 'Escape') {
+        setKeybinds(prev => prev.map(k => k.label === listening ? { ...k, keys: prevKeyRef.current } : k))
+        setListening(null)
+        return
+      }
+      const combo = formatKey(e)
+      if (!combo) return
+      setKeybinds(prev => prev.map(k => k.label === listening ? { ...k, keys: combo } : k))
+      setListening(null)
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [listening])
   const themes = [
     { key:'midnight', name:'Midnight', desc:'The default Atlas theme, inherently dark.' },
     { key:'office',   name:'Office',   desc:"If you want to relieve the days of Microsoft Office's blinding UI, this one is for you." },
@@ -527,19 +559,26 @@ function SettingsPage({ theme, setTheme }) {
             <p style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)', lineHeight:'16px' }}>
               To assign a keybind, click the container and then press a key to assign it.
             </p>
-            {keybinds.map(k => (
+            {keybinds.map(k => {
+              const isListening = listening === k.label
+              return (
               <div key={k.label} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
                 <div>
                   <div style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:14, color:'var(--fg-primary)', lineHeight:'20px' }}>{k.label}</div>
                   <div style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)', lineHeight:'16px' }}>{k.desc}</div>
                 </div>
-                <button style={{
-                  background:'var(--bg-elevation-two)', border:'1px solid var(--border-accent)',
-                  borderRadius:6, padding:'6px 12px', flexShrink:0,
-                  fontFamily:'var(--font-primary)', fontWeight:500, fontSize:13, color:'var(--fg-primary)',
-                  cursor:'pointer', whiteSpace:'nowrap',
-                }}>{k.keys}</button>
+                <button
+                  className={isListening ? 'keybind-listening' : undefined}
+                  onClick={() => { prevKeyRef.current = k.keys; setListening(k.label) }}
+                  style={{
+                    background:'var(--bg-elevation-two)', border:'1px solid var(--border-accent)',
+                    borderRadius:6, padding:'6px 12px', flexShrink:0,
+                    fontFamily:'var(--font-primary)', fontWeight:500, fontSize:13, color:'var(--fg-primary)',
+                    cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s, border-color 0.15s, color 0.15s',
+                  }}
+                >{isListening ? 'Press a key...' : k.keys}</button>
               </div>
+              )}}
             ))}
           </div>
         </div>
