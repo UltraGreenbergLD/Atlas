@@ -151,7 +151,7 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
             return (
               <button key={item.key} onClick={() => clickable && setPage(item.key)} style={{
                 display:'flex', alignItems:'center', justifyContent: collapsed ? 'center' : 'flex-start',
-                gap: collapsed ? 0 : 12, height:37,
+                gap: collapsed ? 0 : 12, height:37, minHeight:37, flexShrink:0,
                 padding: collapsed ? '0 0 0 8px' : '0 16px', borderRadius:6, width:'100%', textAlign:'left',
                 background: active ? 'var(--bg-default)' : 'transparent',
                 cursor: clickable ? 'pointer' : 'default',
