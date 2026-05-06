@@ -152,7 +152,7 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
               <button key={item.key} onClick={() => clickable && setPage(item.key)} style={{
                 display:'flex', alignItems:'center', justifyContent: collapsed ? 'center' : 'flex-start',
                 gap: collapsed ? 0 : 12, height:37,
-                padding: collapsed ? 0 : '0 16px', borderRadius:6, width:'100%', textAlign:'left',
+                padding: collapsed ? '0 0 0 8px' : '0 16px', borderRadius:6, width:'100%', textAlign:'left',
                 background: active ? 'var(--bg-default)' : 'transparent',
                 cursor: clickable ? 'pointer' : 'default',
                 opacity: (!clickable && !active) ? .5 : 1,
@@ -708,7 +708,7 @@ function ChatPanel({ messages, isThinking, inputValue, setInputValue, onSend }) 
       <div ref={feedRef} style={{ flex:1, overflowY:'auto', padding:'12px 8px 12px 16px', display:'flex', flexDirection:'column', gap:16 }}>
         {/* Default Atlas intro message */}
         {messages.length === 0 && (
-          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
+          <div style={{ display:'flex', alignItems:'flex-start', gap:16 }}>
             <div style={{
               width:24, height:24, borderRadius:'50%', flexShrink:0,
               background:'var(--bg-elevation-one)', border:'1px solid var(--border-default)',
