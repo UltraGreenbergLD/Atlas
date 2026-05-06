@@ -138,7 +138,7 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
       </div>
 
       {/* Nav */}
-      <div style={{ flex:1, padding:'16px 8px', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
+      <div style={{ flex:1, padding: collapsed ? '16px 0' : '16px 8px', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
         <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
           {[
             { key:'home',      label:'Home',        icon: ASSETS.homeIcon },
