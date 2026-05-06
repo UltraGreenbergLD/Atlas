@@ -83,30 +83,114 @@ function applyTheme(name) {
   Object.entries(vars).forEach(([k, v]) => root.style.setProperty(k, v))
 }
 
+// ─── Window width hook ────────────────────────────────────────────────────
+function useWindowWidth() {
+  const [width, setWidth] = useState(() => window.innerWidth)
+  useEffect(() => {
+    const handle = () => setWidth(window.innerWidth)
+    window.addEventListener('resize', handle)
+    return () => window.removeEventListener('resize', handle)
+  }, [])
+  return width
+}
+
 // ─── Figma asset URLs ─────────────────────────────────────────────────────
 const ASSETS = {
-  logo:    'https://www.figma.com/api/mcp/asset/7a28f0c4-2d54-474c-8cd3-7d2ca111ea3c',
-  wow:     'https://www.figma.com/api/mcp/asset/b426c896-e0d2-4970-8d8f-a22a4a68fb91',
-  avatar:  'https://www.figma.com/api/mcp/asset/5610fbd9-c69a-4a4c-990d-00651447ef99',
-  charIcon:'https://www.figma.com/api/mcp/asset/c2c6f901-e979-4b98-a897-8575dc7bf9c4',
-  atlasIcon:'https://www.figma.com/api/mcp/asset/15afae1f-dc1f-4803-926d-790ea610d3c2',
+  logo:       'https://www.figma.com/api/mcp/asset/7a28f0c4-2d54-474c-8cd3-7d2ca111ea3c',
+  wow:        'https://www.figma.com/api/mcp/asset/b426c896-e0d2-4970-8d8f-a22a4a68fb91',
+  avatar:     'https://www.figma.com/api/mcp/asset/5610fbd9-c69a-4a4c-990d-00651447ef99',
+  charIcon:   'https://www.figma.com/api/mcp/asset/c2c6f901-e979-4b98-a897-8575dc7bf9c4',
+  atlasIcon:  'https://www.figma.com/api/mcp/asset/15afae1f-dc1f-4803-926d-790ea610d3c2',
   sidebarToggle:'https://www.figma.com/api/mcp/asset/ffaa7488-b70d-47a1-beba-9b9a2e02a38c',
-  homeIcon:'https://www.figma.com/api/mcp/asset/6438938a-6933-4120-b862-443ce3992005',
-  brainIcon:'https://www.figma.com/api/mcp/asset/50f14884-7e9a-4405-9c26-1219b6d28f20',
-  bookIcon:'https://www.figma.com/api/mcp/asset/4e5aeb05-8422-4086-bd26-53bdaf3b6709',
-  filterIcon:'https://www.figma.com/api/mcp/asset/7401beac-cbae-4fc3-ab33-1fb69dc343c9',
-  chevron: 'https://www.figma.com/api/mcp/asset/1a09c031-124a-44fd-a963-02b994150b1d',
-  sparkle: 'https://www.figma.com/api/mcp/asset/c8ee8090-bd20-4a66-b158-781ba4633e00',
-  guideIcon:'https://www.figma.com/api/mcp/asset/9f0c814e-39dd-42d6-8bbb-6a2b85a553eb',
-  logIcon: 'https://www.figma.com/api/mcp/asset/a6559edf-5de6-4cb1-8a42-6ab94972d903',
+  homeIcon:   'https://www.figma.com/api/mcp/asset/6438938a-6933-4120-b862-443ce3992005',
+  brainIcon:  'https://www.figma.com/api/mcp/asset/50f14884-7e9a-4405-9c26-1219b6d28f20',
+  bookIcon:   'https://www.figma.com/api/mcp/asset/4e5aeb05-8422-4086-bd26-53bdaf3b6709',
+  filterIcon: 'https://www.figma.com/api/mcp/asset/7401beac-cbae-4fc3-ab33-1fb69dc343c9',
+  chevron:    'https://www.figma.com/api/mcp/asset/1a09c031-124a-44fd-a963-02b994150b1d',
+  sparkle:    'https://www.figma.com/api/mcp/asset/c8ee8090-bd20-4a66-b158-781ba4633e00',
+  guideIcon:  'https://www.figma.com/api/mcp/asset/9f0c814e-39dd-42d6-8bbb-6a2b85a553eb',
+  logIcon:    'https://www.figma.com/api/mcp/asset/a6559edf-5de6-4cb1-8a42-6ab94972d903',
   refreshIcon:'https://www.figma.com/api/mcp/asset/e40b032f-c75e-41c9-a99c-c4f8e867952b',
-  keyIcon: 'https://www.figma.com/api/mcp/asset/3f815a01-3932-4670-a40a-7702681b0ea7',
-  towerIcon:'https://www.figma.com/api/mcp/asset/2f9839fa-c858-4783-803d-86b52776ddd0',
-  swordsIcon:'https://www.figma.com/api/mcp/asset/8f7c9ddc-f74f-4253-8c13-c41974127ad1',
-  micIcon: 'https://www.figma.com/api/mcp/asset/663ef85e-117b-4b88-8837-95c953fbc69a',
+  keyIcon:    'https://www.figma.com/api/mcp/asset/3f815a01-3932-4670-a40a-7702681b0ea7',
+  towerIcon:  'https://www.figma.com/api/mcp/asset/2f9839fa-c858-4783-803d-86b52776ddd0',
+  swordsIcon: 'https://www.figma.com/api/mcp/asset/8f7c9ddc-f74f-4253-8c13-c41974127ad1',
+  micIcon:    'https://www.figma.com/api/mcp/asset/663ef85e-117b-4b88-8837-95c953fbc69a',
 }
 
 // No API — responses are served from atlasResponses.js (static, zero cost)
+
+// ─── Mobile Top Nav ───────────────────────────────────────────────────────
+const MOBILE_NAV_ITEMS = [
+  { key:'home',      label:'Home' },
+  { key:'knowledge', label:'Coming Soon' },
+  { key:'logs',      label:'Coming Soon' },
+  { key:'settings',  label:'Settings' },
+]
+
+function MobileTopNav({ page, setPage, menuOpen, setMenuOpen }) {
+  return (
+    <div style={{ position:'relative', zIndex:200, flexShrink:0 }}>
+      <div style={{
+        height:52, display:'flex', alignItems:'center', justifyContent:'space-between',
+        padding:'0 16px', background:'var(--bg-elevation-one)',
+        borderBottom:'1px solid var(--border-default)',
+      }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <div style={{ width:30, height:29, borderRadius:8, overflow:'hidden', flexShrink:0 }}>
+            <img src={ASSETS.logo} style={{ width:'100%', height:'100%', objectFit:'cover' }} alt="Atlas" />
+          </div>
+          <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:16, color:'var(--fg-primary)' }}>
+            Welcome
+          </span>
+        </div>
+        <button onClick={() => setMenuOpen(v => !v)} style={{ display:'flex', flexDirection:'column', gap:5, cursor:'pointer', padding:4 }}>
+          <span style={{ width:20, height:2, background:'var(--fg-primary)', borderRadius:1, display:'block' }} />
+          <span style={{ width:20, height:2, background:'var(--fg-primary)', borderRadius:1, display:'block' }} />
+          <span style={{ width:20, height:2, background:'var(--fg-primary)', borderRadius:1, display:'block' }} />
+        </button>
+      </div>
+      {menuOpen && (
+        <>
+          <div onClick={() => setMenuOpen(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.45)', zIndex:198 }} />
+          <div style={{
+            position:'absolute', top:'100%', left:0, right:0, zIndex:199,
+            background:'var(--bg-elevation-one)', borderBottom:'1px solid var(--border-default)',
+          }}>
+            <div style={{ padding:'8px 16px', display:'flex', flexDirection:'column', gap:4 }}>
+              {MOBILE_NAV_ITEMS.map(item => (
+                <button key={item.key} onClick={() => { setPage(item.key); setMenuOpen(false) }} style={{
+                  display:'flex', alignItems:'center', height:44, padding:'0 12px',
+                  borderRadius:8, width:'100%', textAlign:'left', cursor:'pointer',
+                  background: page === item.key ? 'var(--bg-default)' : 'transparent',
+                }}>
+                  <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:15, color:'var(--fg-primary)' }}>
+                    {item.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <div style={{ height:1, background:'var(--border-default)', margin:'0 16px' }} />
+            <div style={{ padding:16, display:'flex', flexDirection:'column', gap:12 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                <div style={{ width:32, height:32, flexShrink:0 }}>
+                  <img src={ASSETS.wow} style={{ width:'100%', height:'100%', objectFit:'cover' }} alt="WoW" />
+                </div>
+                <div>
+                  <div style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:10, color:'var(--fg-secondary)', textTransform:'capitalize' }}>Current Game</div>
+                  <div style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:13, color:'var(--fg-primary)' }}>World of Warcraft</div>
+                </div>
+              </div>
+              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                <img src={ASSETS.avatar} style={{ width:32, height:32, borderRadius:64, objectFit:'cover', flexShrink:0 }} alt="User" />
+                <span style={{ fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-primary)' }}>User1</span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────
 function Sidebar({ page, setPage, collapsed, setCollapsed }) {
@@ -172,8 +256,8 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
         {!collapsed && (
           <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
             {[
-              { label:'CPU', value:'34%' },
-              { label:'GPU', value:'72%' },
+              { label:'CPU',    value:'34%' },
+              { label:'GPU',    value:'72%' },
               { label:'Memory', value:'58%' },
             ].map(stat => (
               <div key={stat.label} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:21 }}>
@@ -191,7 +275,6 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
 
       {/* Footer */}
       <div style={{ borderTop:'1px solid var(--border-default)', background:'var(--bg-elevation-one)' }}>
-        {/* Active Game */}
         <div style={{ display:'flex', gap:8, padding:12, alignItems:'center', justifyContent: collapsed ? 'center' : 'flex-start' }}>
           <div style={{ width:32, height:32, flexShrink:0 }}>
             <img src={ASSETS.wow} style={{ width:'100%', height:'100%', objectFit:'cover' }} alt="WoW" />
@@ -210,7 +293,6 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
             </div>
           )}
         </div>
-        {/* User */}
         <div style={{ display:'flex', gap:8, padding:12, alignItems:'center', justifyContent: collapsed ? 'center' : 'flex-start' }}>
           <img src={ASSETS.avatar} style={{ width:32, height:32, borderRadius:128, objectFit:'cover', flexShrink:0 }} alt="User" />
           {!collapsed && (
@@ -223,15 +305,14 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
 }
 
 // ─── Character Card ───────────────────────────────────────────────────────
-function CharacterCard() {
+function CharacterCard({ isMobile }) {
   return (
     <div style={{
       background:'var(--bg-elevation-one)', border:'1px solid var(--border-default)',
       borderRadius:16, padding:16, display:'flex', flexDirection:'column', gap:16,
-      width:280, flexShrink:0, alignSelf:'stretch',
+      width: isMobile ? '100%' : 280, flexShrink: isMobile ? undefined : 0, alignSelf:'stretch',
       boxShadow:'0px 4px 3px rgba(0,0,0,0.09)',
     }}>
-      {/* Header */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', gap:12, alignItems:'flex-start', width:152 }}>
           <div style={{
@@ -258,8 +339,6 @@ function CharacterCard() {
           cursor:'pointer',
         }}>Change</button>
       </div>
-
-      {/* Stats */}
       <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
         {[
           { label:'Item Level',    value:'252' },
@@ -377,9 +456,9 @@ function RecentGuidesCard() {
 // ─── Recent Logs Card ─────────────────────────────────────────────────────
 function RecentLogsCard() {
   const logs = [
-    { title:'Magisters Terrace - 10',       type:'Mythic+', time:'2 hours ago', icon: ASSETS.keyIcon,    iconSize:{ w:24, h:24 } },
-    { title:'Voidspire — Crown of the Cosmos',type:'Raid',  time:'4 hours ago', icon: ASSETS.towerIcon,  iconSize:{ w:18, h:20 } },
-    { title:'Slayers Rise',                  type:'PVP',    time:'1 day Ago',   icon: ASSETS.swordsIcon, iconSize:{ w:21, h:21 } },
+    { title:'Magisters Terrace - 10',        type:'Mythic+', time:'2 hours ago', icon: ASSETS.keyIcon,    iconSize:{ w:24, h:24 } },
+    { title:'Voidspire — Crown of the Cosmos',type:'Raid',   time:'4 hours ago', icon: ASSETS.towerIcon,  iconSize:{ w:18, h:20 } },
+    { title:'Slayers Rise',                   type:'PVP',    time:'1 day Ago',   icon: ASSETS.swordsIcon, iconSize:{ w:21, h:21 } },
   ]
   return (
     <div style={{
@@ -428,20 +507,18 @@ function RecentLogsCard() {
 }
 
 // ─── Home Dashboard ───────────────────────────────────────────────────────
-function HomeDashboard({ onActionClick }) {
+function HomeDashboard({ onActionClick, isMobile }) {
   return (
     <div style={{
       background:'var(--bg-default)', border:'0.5px solid var(--border-accent)',
       borderRadius:24, flex:1, minWidth:0, height:'100%',
       overflowX:'clip', overflowY:'auto',
     }}>
-      <div style={{ padding:16, display:'flex', flexDirection:'column', gap:16, minHeight:925 }}>
-        {/* Top row */}
-        <div style={{ display:'flex', gap:16, alignItems:'flex-start' }}>
-          <CharacterCard />
+      <div style={{ padding:16, display:'flex', flexDirection:'column', gap:16, minHeight: isMobile ? undefined : 925 }}>
+        <div style={{ display:'flex', flexDirection: isMobile ? 'column' : 'row', gap:16, alignItems:'flex-start' }}>
+          <CharacterCard isMobile={isMobile} />
           <QuickActionCard onActionClick={onActionClick} />
         </div>
-        {/* Recents row */}
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
           <RecentGuidesCard />
           <RecentLogsCard />
@@ -481,7 +558,7 @@ function formatKey(e) {
   return [...mods, display].join(' + ')
 }
 
-function SettingsPage({ theme, setTheme }) {
+function SettingsPage({ theme, setTheme, isMobile }) {
   const toggles = [
     { label:'Data Privacy Controls',  desc:'Limit data sent to AI services', defaultOn:true },
     { label:'AI Accuracy Feedback',   desc:'Allow rating responses for improvement' },
@@ -513,6 +590,7 @@ function SettingsPage({ theme, setTheme }) {
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [listening])
+
   const themes = [
     { key:'midnight', name:'Midnight', desc:'The default Atlas theme, inherently dark.' },
     { key:'office',   name:'Office',   desc:"If you want to relieve the days of Microsoft Office's blinding UI, this one is for you." },
@@ -527,18 +605,16 @@ function SettingsPage({ theme, setTheme }) {
     }}>
       <div style={{ padding:16, display:'flex', flexDirection:'column', gap:16 }}>
         {/* Row 1 */}
-        <div style={{ display:'flex', gap:16 }}>
+        <div style={{ display:'flex', flexDirection: isMobile ? 'column' : 'row', gap:16 }}>
           {/* System Performance */}
           <div style={{
             background:'var(--bg-elevation-one)', border:'1px solid var(--border-default)',
             borderRadius:16, padding:16, flex:1, display:'flex', flexDirection:'column', gap:16,
             boxShadow:'0px 4px 3px rgba(0,0,0,0.09)',
           }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-              <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:16, color:'var(--fg-primary)' }}>
-                System Performance
-              </span>
-            </div>
+            <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:16, color:'var(--fg-primary)' }}>
+              System Performance
+            </span>
             {[
               { label:'CPU',    value:34, color:'#4da3ff' },
               { label:'GPU',    value:72, color:'#f59e0b' },
@@ -567,29 +643,29 @@ function SettingsPage({ theme, setTheme }) {
             {keybinds.map(k => {
               const isListening = listening === k.label
               return (
-              <div key={k.label} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
-                <div>
-                  <div style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:14, color:'var(--fg-primary)', lineHeight:'20px' }}>{k.label}</div>
-                  <div style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)', lineHeight:'16px' }}>{k.desc}</div>
+                <div key={k.label} style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:12 }}>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:14, color:'var(--fg-primary)', lineHeight:'20px' }}>{k.label}</div>
+                    <div style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)', lineHeight:'16px' }}>{k.desc}</div>
+                  </div>
+                  <button
+                    className={isListening ? 'keybind-listening' : undefined}
+                    onClick={() => { prevKeyRef.current = k.keys; setListening(k.label) }}
+                    style={{
+                      background:'var(--bg-elevation-two)', border:'1px solid var(--border-accent)',
+                      borderRadius:6, padding:'6px 12px', flexShrink:0,
+                      fontFamily:'var(--font-primary)', fontWeight:500, fontSize:13, color:'var(--fg-primary)',
+                      cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s, border-color 0.15s, color 0.15s',
+                    }}
+                  >{isListening ? 'Press a key...' : k.keys}</button>
                 </div>
-                <button
-                  className={isListening ? 'keybind-listening' : undefined}
-                  onClick={() => { prevKeyRef.current = k.keys; setListening(k.label) }}
-                  style={{
-                    background:'var(--bg-elevation-two)', border:'1px solid var(--border-accent)',
-                    borderRadius:6, padding:'6px 12px', flexShrink:0,
-                    fontFamily:'var(--font-primary)', fontWeight:500, fontSize:13, color:'var(--fg-primary)',
-                    cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s, border-color 0.15s, color 0.15s',
-                  }}
-                >{isListening ? 'Press a key...' : k.keys}</button>
-              </div>
               )
             })}
           </div>
         </div>
 
         {/* Row 2 */}
-        <div style={{ display:'flex', gap:16 }}>
+        <div style={{ display:'flex', flexDirection: isMobile ? 'column' : 'row', gap:16 }}>
           {/* Assistant Settings */}
           <div style={{
             background:'var(--bg-elevation-one)', border:'1px solid var(--border-default)',
@@ -641,8 +717,7 @@ function SettingsPage({ theme, setTheme }) {
                     background:'var(--bg-elevation-two)', border:'1px solid var(--border-accent)',
                     borderRadius:8, padding:'6px 12px', flexShrink:0,
                     fontFamily:'var(--font-primary)', fontWeight:500, fontSize:12, color:'var(--fg-primary)',
-                    cursor:'pointer', whiteSpace:'nowrap',
-                    transition:'background 0.15s, border-color 0.15s',
+                    cursor:'pointer', whiteSpace:'nowrap', transition:'background 0.15s, border-color 0.15s',
                   }}>Select</button>
                 )}
               </div>
@@ -654,7 +729,7 @@ function SettingsPage({ theme, setTheme }) {
   )
 }
 
-// ─── Chat Panel ───────────────────────────────────────────────────────────
+// ─── Chat Panel (desktop) ─────────────────────────────────────────────────
 const QUICK_PROMPTS = [
   'What Are Todays Bountiful Delves?',
   'Best Build for Mythic+?',
@@ -683,7 +758,6 @@ function ChatPanel({ messages, isThinking, inputValue, setInputValue, onSend }) 
       flex:'0 0 280px', width:280, height:'100%', display:'flex', flexDirection:'column',
       background:'var(--bg-elevation-one)',
     }}>
-      {/* Header */}
       <div style={{ padding:'16px 8px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid var(--border-default)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:16 }}>
           <div style={{ width:32, height:32, borderRadius:'50%', background:'rgba(99,102,241,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -704,9 +778,7 @@ function ChatPanel({ messages, isThinking, inputValue, setInputValue, onSend }) 
         </div>
       </div>
 
-      {/* Message feed */}
       <div ref={feedRef} style={{ flex:1, overflowY:'auto', padding:'12px 8px 12px 16px', display:'flex', flexDirection:'column', gap:16 }}>
-        {/* Default Atlas intro message */}
         {messages.length === 0 && (
           <div style={{ display:'flex', alignItems:'flex-start', gap:16 }}>
             <div style={{
@@ -716,10 +788,7 @@ function ChatPanel({ messages, isThinking, inputValue, setInputValue, onSend }) 
             }}>
               <img src={ASSETS.atlasIcon} style={{ width:24, height:24, objectFit:'cover' }} alt="" />
             </div>
-            <div style={{
-              background:'var(--bg-default)', borderRadius:8,
-              padding:'8px 12px', maxWidth:267,
-            }}>
+            <div style={{ background:'var(--bg-default)', borderRadius:8, padding:'8px 12px', maxWidth:267 }}>
               <p style={{ fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-secondary)', lineHeight:'20px' }}>
                 Hey there! I'm your AI gaming co-pilot. Ask me anything about your current game. Quests, builds, crafting, or strategies. I'm here when you need me.
               </p>
@@ -759,35 +828,152 @@ function ChatPanel({ messages, isThinking, inputValue, setInputValue, onSend }) 
         )}
       </div>
 
-      {/* Quick prompts */}
       <div style={{ padding:'16px 8px', borderTop:'1px solid var(--border-default)', display:'flex', flexDirection:'column', gap:8 }}>
-        <span style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)', lineHeight:'16px' }}>
-          Quick prompts
-        </span>
+        <span style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)', lineHeight:'16px' }}>Quick prompts</span>
         <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
           {QUICK_PROMPTS.map(p => <PromptPill key={p} text={p} onClick={onSend} />)}
         </div>
       </div>
 
-      {/* Input */}
       <div style={{ padding:'16px 16px 16px 8px', borderTop:'1px solid var(--border-default)' }}>
-        <div style={{
-          background:'var(--input-bg)', border:'1px solid var(--input-border)',
-          borderRadius:8, padding:'12px 14px', display:'flex', alignItems:'center', gap:8,
-        }}>
+        <div style={{ background:'var(--input-bg)', border:'1px solid var(--input-border)', borderRadius:8, padding:'12px 14px', display:'flex', alignItems:'center', gap:8 }}>
           <input
             value={inputValue}
             onChange={e => setInputValue(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), onSend(inputValue))}
             placeholder="Command Atlas..."
-            style={{
-              flex:1, background:'transparent', border:'none', outline:'none',
-              fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-primary)', lineHeight:'20px',
-            }}
+            style={{ flex:1, background:'transparent', border:'none', outline:'none', fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-primary)', lineHeight:'20px' }}
           />
           <img src={ASSETS.micIcon} className="ui-icon" style={{ width:24, height:24, cursor:'pointer', opacity:.6 }} alt="" />
         </div>
       </div>
+    </div>
+  )
+}
+
+// ─── Mobile Chat Drawer ───────────────────────────────────────────────────
+function MobileChatDrawer({ open, setOpen, messages, isThinking, inputValue, setInputValue, onSend }) {
+  const feedRef = useRef(null)
+  useEffect(() => {
+    if (feedRef.current) feedRef.current.scrollTop = feedRef.current.scrollHeight
+  }, [messages, isThinking])
+
+  return (
+    <div style={{ position:'fixed', bottom:0, left:0, right:0, zIndex:150 }}>
+      {open ? (
+        <div style={{
+          height:'75vh', background:'var(--bg-elevation-one)',
+          borderTop:'1px solid var(--border-default)',
+          display:'flex', flexDirection:'column',
+          boxShadow:'0 -4px 24px rgba(0,0,0,0.25)',
+        }}>
+          {/* Pull handle */}
+          <div onClick={() => setOpen(false)} style={{ display:'flex', justifyContent:'center', padding:'12px 0', cursor:'pointer', flexShrink:0 }}>
+            <div style={{ width:36, height:4, borderRadius:2, background:'var(--border-accent)' }} />
+          </div>
+          {/* Header */}
+          <div style={{ padding:'0 16px 12px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid var(--border-default)', flexShrink:0 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+              <div style={{ width:32, height:32, borderRadius:'50%', background:'rgba(99,102,241,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <img src={ASSETS.atlasIcon} style={{ width:32, height:32, objectFit:'cover' }} alt="Atlas" />
+              </div>
+              <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:16, color:'var(--fg-primary)' }}>
+                Atlas Command
+              </span>
+            </div>
+            <div style={{ background:'var(--badge-success-bg)', border:'1px solid var(--badge-success-border)', borderRadius:12, padding:'4px 8px', display:'flex', alignItems:'center', gap:8 }}>
+              <div style={{ width:4, height:4, borderRadius:'50%', background:'var(--badge-success-fg)', flexShrink:0 }} />
+              <span style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:8, color:'var(--badge-success-fg)', textTransform:'uppercase', lineHeight:'12px', whiteSpace:'nowrap' }}>
+                Connected
+              </span>
+            </div>
+          </div>
+          {/* Feed */}
+          <div ref={feedRef} style={{ flex:1, overflowY:'auto', padding:'12px 16px', display:'flex', flexDirection:'column', gap:16 }}>
+            {messages.length === 0 && (
+              <div style={{ display:'flex', alignItems:'flex-start', gap:16 }}>
+                <div style={{ width:24, height:24, borderRadius:'50%', flexShrink:0, background:'var(--bg-elevation-one)', border:'1px solid var(--border-default)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <img src={ASSETS.atlasIcon} style={{ width:24, height:24, objectFit:'cover' }} alt="" />
+                </div>
+                <div style={{ background:'var(--bg-default)', borderRadius:8, padding:'8px 12px' }}>
+                  <p style={{ fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-secondary)', lineHeight:'20px' }}>
+                    Hey there! I'm your AI gaming co-pilot. Ask me anything about your current game. Quests, builds, crafting, or strategies. I'm here when you need me.
+                  </p>
+                </div>
+              </div>
+            )}
+            {messages.map((m, i) => {
+              const isUser = m.role === 'user'
+              return (
+                <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:8, flexDirection: isUser ? 'row-reverse' : 'row', animation:'fadeUp .2s ease' }}>
+                  {!isUser && (
+                    <div style={{ width:24, height:24, borderRadius:'50%', flexShrink:0, background:'var(--bg-elevation-one)', border:'1px solid var(--border-default)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <img src={ASSETS.atlasIcon} style={{ width:24, height:24 }} alt="" />
+                    </div>
+                  )}
+                  <div style={{
+                    background: isUser ? 'var(--bg-elevation-two)' : 'var(--bg-default)',
+                    borderRadius:8, padding:'8px 12px', maxWidth:'80%',
+                    fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-secondary)', lineHeight:'20px',
+                  }}>
+                    {m.content}
+                  </div>
+                </div>
+              )
+            })}
+            {isThinking && (
+              <div style={{ display:'flex', alignItems:'flex-start', gap:8 }}>
+                <div style={{ width:24, height:24, borderRadius:'50%', flexShrink:0, background:'var(--bg-elevation-one)', border:'1px solid var(--border-default)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <img src={ASSETS.atlasIcon} style={{ width:24, height:24 }} alt="" />
+                </div>
+                <div style={{ background:'var(--bg-default)', borderRadius:8, padding:'12px', display:'flex', gap:4, alignItems:'center' }}>
+                  {[0,1,2].map(i => (
+                    <span key={i} style={{ width:6, height:6, borderRadius:'50%', background:'var(--fg-secondary)', display:'inline-block', animation:`bounce 1.2s ${i*.2}s infinite` }} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Quick prompts */}
+          <div style={{ padding:'12px 16px', borderTop:'1px solid var(--border-default)', display:'flex', flexDirection:'column', gap:8, flexShrink:0 }}>
+            <span style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)', lineHeight:'16px' }}>Quick prompts</span>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+              {QUICK_PROMPTS.map(p => <PromptPill key={p} text={p} onClick={onSend} />)}
+            </div>
+          </div>
+          {/* Input */}
+          <div style={{ padding:'12px 16px', borderTop:'1px solid var(--border-default)', flexShrink:0 }}>
+            <div style={{ background:'var(--input-bg)', border:'1px solid var(--input-border)', borderRadius:8, padding:'12px 14px', display:'flex', alignItems:'center', gap:8 }}>
+              <input
+                value={inputValue}
+                onChange={e => setInputValue(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), onSend(inputValue))}
+                placeholder="Command Atlas..."
+                style={{ flex:1, background:'transparent', border:'none', outline:'none', fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-primary)', lineHeight:'20px' }}
+              />
+              <img src={ASSETS.micIcon} className="ui-icon" style={{ width:24, height:24, cursor:'pointer', opacity:.6 }} alt="" />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div onClick={() => setOpen(true)} style={{
+          height:52, background:'var(--bg-elevation-one)', borderTop:'1px solid var(--border-default)',
+          display:'flex', alignItems:'center', padding:'0 16px', gap:12, cursor:'pointer',
+        }}>
+          <div style={{ width:28, height:28, borderRadius:'50%', background:'rgba(99,102,241,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <img src={ASSETS.atlasIcon} style={{ width:28, height:28, objectFit:'cover' }} alt="Atlas" />
+          </div>
+          <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:15, color:'var(--fg-primary)' }}>
+            Atlas Command
+          </span>
+          <div style={{ marginLeft:'auto', background:'var(--badge-success-bg)', border:'1px solid var(--badge-success-border)', borderRadius:12, padding:'4px 8px', display:'flex', alignItems:'center', gap:6 }}>
+            <div style={{ width:4, height:4, borderRadius:'50%', background:'var(--badge-success-fg)', flexShrink:0 }} />
+            <span style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:8, color:'var(--badge-success-fg)', textTransform:'uppercase', lineHeight:'12px', whiteSpace:'nowrap' }}>
+              Connected
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -811,13 +997,13 @@ function ComingSoonPage() {
 }
 
 // ─── Main content wrapper ─────────────────────────────────────────────────
-function MainContent({ page, onActionClick, theme, setTheme }) {
+function MainContent({ page, onActionClick, theme, setTheme, isMobile }) {
   return (
-    <div style={{ flex:1, minWidth:0, height:'100%', display:'flex', padding:'12px 8px', gap:0 }}>
+    <div style={{ flex:1, minWidth:0, height:'100%', display:'flex', padding: isMobile ? 8 : '12px 8px', gap:0 }}>
       {page === 'home'
-        ? <HomeDashboard onActionClick={onActionClick} />
+        ? <HomeDashboard onActionClick={onActionClick} isMobile={isMobile} />
         : page === 'settings'
-        ? <SettingsPage theme={theme} setTheme={setTheme} />
+        ? <SettingsPage theme={theme} setTheme={setTheme} isMobile={isMobile} />
         : <ComingSoonPage />
       }
     </div>
@@ -832,26 +1018,49 @@ export default function App() {
   const [messages, setMessages] = useState([])
   const [isThinking, setIsThinking] = useState(false)
   const [inputValue, setInputValue] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
+  const width = useWindowWidth()
+  const isMobile = width < 768
 
   const sendMessage = async (text) => {
     const trimmed = (text || inputValue).trim()
     if (!trimmed) return
     setInputValue('')
-    const userMsg = { role:'user', content:trimmed }
-    setMessages(prev => [...prev, userMsg])
+    setMessages(prev => [...prev, { role:'user', content:trimmed }])
     setIsThinking(true)
-    // Realistic thinking delay (800ms–1.4s)
     const delay = 800 + Math.random() * 600
     await new Promise(r => setTimeout(r, delay))
-    const reply = getStaticResponse(trimmed)
-    setMessages(prev => [...prev, { role:'assistant', content:reply }])
+    setMessages(prev => [...prev, { role:'assistant', content:getStaticResponse(trimmed) }])
     setIsThinking(false)
+  }
+
+  const handleSetTheme = (t) => { setTheme(t); applyTheme(t) }
+
+  if (isMobile) {
+    return (
+      <div style={{ width:'100%', height:'100%', display:'flex', flexDirection:'column', overflow:'hidden', background:'var(--bg-elevation-one)' }}>
+        <MobileTopNav page={page} setPage={setPage} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <div style={{ flex:1, minHeight:0, overflow:'hidden', paddingBottom:52 }}>
+          <MainContent page={page} onActionClick={sendMessage} theme={theme} setTheme={handleSetTheme} isMobile={true} />
+        </div>
+        <MobileChatDrawer
+          open={chatOpen}
+          setOpen={setChatOpen}
+          messages={messages}
+          isThinking={isThinking}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          onSend={sendMessage}
+        />
+      </div>
+    )
   }
 
   return (
     <div style={{ width:'100%', height:'100%', display:'flex', overflow:'hidden', background:'var(--bg-elevation-one)' }}>
       <Sidebar page={page} setPage={setPage} collapsed={collapsed} setCollapsed={setCollapsed} />
-      <MainContent page={page} onActionClick={sendMessage} theme={theme} setTheme={(t) => { setTheme(t); applyTheme(t) }} />
+      <MainContent page={page} onActionClick={sendMessage} theme={theme} setTheme={handleSetTheme} isMobile={false} />
       <ChatPanel
         messages={messages}
         isThinking={isThinking}
