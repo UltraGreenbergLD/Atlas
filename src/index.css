@@ -71,9 +71,9 @@ img.ui-icon { filter: var(--icon-filter); }
   50%       { box-shadow: 0 0 0 3px rgba(77,163,255,0.15); }
 }
 .keybind-listening {
-  border-color: #4da3ff !important;
-  background: rgba(77,163,255,0.1) !important;
-  color: #4da3ff !important;
+  border: 2px solid #4da3ff !important;
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
   animation: pulse-border 1s ease infinite;
 }
 
