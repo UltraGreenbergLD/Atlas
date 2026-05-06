@@ -137,8 +137,7 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
         />
       </div>
 
-      {/* Nav — hidden when collapsed */}
-      {!collapsed && (
+      {/* Nav */}
       <div style={{ flex:1, padding:'16px 8px', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
         <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
           {[
@@ -151,68 +150,74 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
             const clickable = item.key === 'home' || item.key === 'settings' || item.key === 'knowledge' || item.key === 'logs'
             return (
               <button key={item.key} onClick={() => clickable && setPage(item.key)} style={{
-                display:'flex', alignItems:'center', gap:12, height:37,
-                padding:'0 16px', borderRadius:6, width:'100%', textAlign:'left',
+                display:'flex', alignItems:'center', justifyContent: collapsed ? 'center' : 'flex-start',
+                gap: collapsed ? 0 : 12, height:37,
+                padding: collapsed ? 0 : '0 16px', borderRadius:6, width:'100%', textAlign:'left',
                 background: active ? 'var(--bg-default)' : 'transparent',
                 cursor: clickable ? 'pointer' : 'default',
                 opacity: (!clickable && !active) ? .5 : 1,
               }}>
                 <img src={item.icon} className="ui-icon" style={{ width:16, height:16, flexShrink:0 }} alt="" />
-                <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:14, color:'var(--fg-primary)' }}>
-                  {item.label}
-                </span>
+                {!collapsed && (
+                  <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:14, color:'var(--fg-primary)' }}>
+                    {item.label}
+                  </span>
+                )}
               </button>
             )
           })}
         </div>
 
-        {/* PC Performance */}
-        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-          {[
-            { label:'CPU', value:'34%' },
-            { label:'GPU', value:'72%' },
-            { label:'Memory', value:'58%' },
-          ].map(stat => (
-            <div key={stat.label} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:21 }}>
-              <span style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:12, color:'var(--fg-primary)', textTransform:'uppercase' }}>
-                {stat.label}
-              </span>
-              <span style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)' }}>
-                {stat.value}
-              </span>
-            </div>
-          ))}
-        </div>
+        {/* PC Performance — hidden when collapsed */}
+        {!collapsed && (
+          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+            {[
+              { label:'CPU', value:'34%' },
+              { label:'GPU', value:'72%' },
+              { label:'Memory', value:'58%' },
+            ].map(stat => (
+              <div key={stat.label} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:21 }}>
+                <span style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:12, color:'var(--fg-primary)', textTransform:'uppercase' }}>
+                  {stat.label}
+                </span>
+                <span style={{ fontFamily:'var(--font-primary)', fontSize:12, color:'var(--fg-secondary)' }}>
+                  {stat.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      )} {/* end collapsed check */}
 
-      {/* Footer — hidden when collapsed */}
-      {!collapsed && (
+      {/* Footer */}
       <div style={{ borderTop:'1px solid var(--border-default)', background:'var(--bg-elevation-one)' }}>
         {/* Active Game */}
-        <div style={{ display:'flex', gap:8, padding:12, alignItems:'flex-start' }}>
+        <div style={{ display:'flex', gap:8, padding:12, alignItems:'center', justifyContent: collapsed ? 'center' : 'flex-start' }}>
           <div style={{ width:32, height:32, flexShrink:0 }}>
             <img src={ASSETS.wow} style={{ width:'100%', height:'100%', objectFit:'cover' }} alt="WoW" />
           </div>
-          <div style={{ flex:1, display:'flex', alignItems:'center', gap:8, minWidth:0 }}>
-            <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:8, color:'var(--fg-primary)', textTransform:'capitalize', lineHeight:'12px' }}>
-                Current Game
+          {!collapsed && (
+            <div style={{ flex:1, display:'flex', alignItems:'center', gap:8, minWidth:0 }}>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:8, color:'var(--fg-primary)', textTransform:'capitalize', lineHeight:'12px' }}>
+                  Current Game
+                </div>
+                <div style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:12, color:'var(--fg-primary)', lineHeight:'16px' }}>
+                  World of Warcraft
+                </div>
               </div>
-              <div style={{ fontFamily:'var(--font-primary)', fontWeight:500, fontSize:12, color:'var(--fg-primary)', lineHeight:'16px' }}>
-                World of Warcraft
-              </div>
+              <img src={ASSETS.chevron} className="ui-icon" style={{ width:12, height:12, flexShrink:0 }} alt="" />
             </div>
-            <img src={ASSETS.chevron} className="ui-icon" style={{ width:12, height:12, flexShrink:0 }} alt="" />
-          </div>
+          )}
         </div>
         {/* User */}
-        <div style={{ display:'flex', gap:8, padding:12, alignItems:'center' }}>
+        <div style={{ display:'flex', gap:8, padding:12, alignItems:'center', justifyContent: collapsed ? 'center' : 'flex-start' }}>
           <img src={ASSETS.avatar} style={{ width:32, height:32, borderRadius:128, objectFit:'cover', flexShrink:0 }} alt="User" />
-          <span style={{ fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-primary)' }}>User1</span>
+          {!collapsed && (
+            <span style={{ fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-primary)' }}>User1</span>
+          )}
         </div>
       </div>
-      )} {/* end collapsed check */}
     </div>
   )
 }
