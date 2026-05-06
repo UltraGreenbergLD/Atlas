@@ -583,8 +583,8 @@ function SettingsPage({ theme, setTheme }) {
                   }}
                 >{isListening ? 'Press a key...' : k.keys}</button>
               </div>
-              )}}
-            ))}
+              )
+            })}
           </div>
         </div>
 
