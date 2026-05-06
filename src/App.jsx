@@ -25,6 +25,7 @@ const THEMES = {
     '--input-placeholder':'#7f8696',
     '--char-icon-bg':     'rgba(77,163,255,0.12)',
     '--nav-active-bg':    '#111520',
+    '--icon-filter':      'none',
   },
   office: {
     '--bg-default':       '#edf1fb',
@@ -48,6 +49,7 @@ const THEMES = {
     '--input-placeholder':'#9099b8',
     '--char-icon-bg':     'rgba(29,78,216,0.1)',
     '--nav-active-bg':    '#edf1fb',
+    '--icon-filter':      'invert(0.6) sepia(1) saturate(0.5) hue-rotate(190deg) brightness(0.6)',
   },
   dusk: {
     '--bg-default':       '#1a1225',
@@ -71,6 +73,7 @@ const THEMES = {
     '--input-placeholder':'#7a6590',
     '--char-icon-bg':     'rgba(167,139,250,0.15)',
     '--nav-active-bg':    '#1a1225',
+    '--icon-filter':      'none',
   },
 }
 
@@ -128,6 +131,7 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
         <img
           src={ASSETS.sidebarToggle}
           onClick={() => setCollapsed(!collapsed)}
+          className="ui-icon"
           style={{ width:17, height:17, cursor:'pointer', opacity:.7, flexShrink:0 }}
           alt="Toggle sidebar"
         />
@@ -153,7 +157,7 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
                 cursor: clickable ? 'pointer' : 'default',
                 opacity: (!clickable && !active) ? .5 : 1,
               }}>
-                <img src={item.icon} style={{ width:16, height:16, flexShrink:0 }} alt="" />
+                <img src={item.icon} className="ui-icon" style={{ width:16, height:16, flexShrink:0 }} alt="" />
                 <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:14, color:'var(--fg-primary)' }}>
                   {item.label}
                 </span>
@@ -199,7 +203,7 @@ function Sidebar({ page, setPage, collapsed, setCollapsed }) {
                 World of Warcraft
               </div>
             </div>
-            <img src={ASSETS.chevron} style={{ width:12, height:12, flexShrink:0 }} alt="" />
+            <img src={ASSETS.chevron} className="ui-icon" style={{ width:12, height:12, flexShrink:0 }} alt="" />
           </div>
         </div>
         {/* User */}
@@ -292,7 +296,7 @@ function QuickActionCard({ onActionClick }) {
       boxShadow:'0px 4px 3px rgba(0,0,0,0.09)',
     }}>
       <div style={{ display:'flex', alignItems:'center', gap:8, height:21 }}>
-        <img src={ASSETS.sparkle} style={{ width:16, height:16 }} alt="" />
+        <img src={ASSETS.sparkle} className="ui-icon" style={{ width:16, height:16 }} alt="" />
         <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:16, color:'var(--fg-primary)', lineHeight:'24px' }}>
           Quick Actions
         </span>
@@ -331,7 +335,7 @@ function RecentGuidesCard() {
       boxShadow:'0px 4px 3px rgba(0,0,0,0.09)',
     }}>
       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-        <img src={ASSETS.guideIcon} style={{ width:16, height:16 }} alt="" />
+        <img src={ASSETS.guideIcon} className="ui-icon" style={{ width:16, height:16 }} alt="" />
         <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:16, color:'var(--fg-primary)', lineHeight:'24px' }}>
           Recent Guides & Knowledge
         </span>
@@ -380,12 +384,12 @@ function RecentLogsCard() {
     }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <img src={ASSETS.logIcon} style={{ width:15, height:14 }} alt="" />
+          <img src={ASSETS.logIcon} className="ui-icon" style={{ width:15, height:14 }} alt="" />
           <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:16, color:'var(--fg-primary)', lineHeight:'24px' }}>
             Recent Logs
           </span>
         </div>
-        <img src={ASSETS.refreshIcon} style={{ width:23, height:16, cursor:'pointer', opacity:.7 }} alt="" />
+        <img src={ASSETS.refreshIcon} className="ui-icon" style={{ width:23, height:16, cursor:'pointer', opacity:.7 }} alt="" />
       </div>
       <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
         {logs.map(l => (
@@ -394,7 +398,7 @@ function RecentLogsCard() {
             borderRadius:8, height:56, display:'flex', alignItems:'center', padding:8, gap:8,
           }}>
             <div style={{ width:40, height:40, borderRadius:6, flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <img src={l.icon} style={{ width:l.iconSize.w, height:l.iconSize.h }} alt="" />
+              <img src={l.icon} className="ui-icon" style={{ width:l.iconSize.w, height:l.iconSize.h }} alt="" />
             </div>
             <div style={{ display:'flex', flexDirection:'column', gap:2, flex:1, minWidth:0 }}>
               <span style={{ fontFamily:'var(--font-secondary)', fontWeight:600, fontSize:14, color:'var(--fg-primary)', lineHeight:'20px', whiteSpace:'nowrap' }}>
@@ -737,7 +741,7 @@ function ChatPanel({ messages, isThinking, inputValue, setInputValue, onSend }) 
               fontFamily:'var(--font-primary)', fontSize:14, color:'var(--fg-primary)', lineHeight:'20px',
             }}
           />
-          <img src={ASSETS.micIcon} style={{ width:24, height:24, cursor:'pointer', opacity:.6 }} alt="" />
+          <img src={ASSETS.micIcon} className="ui-icon" style={{ width:24, height:24, cursor:'pointer', opacity:.6 }} alt="" />
         </div>
       </div>
     </div>
